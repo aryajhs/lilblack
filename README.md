@@ -2,23 +2,6 @@
 
 Browser-based **match telemetry explorer** for battle-royale / extraction-style maps: load a ZIP of Parquet shards + minimap art, scrub time, and inspect kills, deaths, loot, storm deaths, and march paths on a 1024×1024 Leaflet overlay.
 
----
-
-## Live deployment
-
-**Production:** [https://lilablackaryan.netlify.app/](https://lilablackaryan.netlify.app/)
-
-**Deploy options (static SPA, no server):**
-
-| Host | Notes |
-|------|--------|
-| **Netlify** | Repo includes `netlify.toml`: `pnpm run build`, publish `dist`, and **COOP/COEP** headers for WASM. Connect repo → deploy. |
-| **Vercel** | Repo includes `vercel.json` headers (same COOP/COEP). Framework preset: **Vite**. Output: **`dist`**. Install: `pnpm install` (or enable pnpm on Vercel). |
-
-WASM + SharedArrayBuffer paths used by `parquet-wasm` **require** those security headers in production, not only in dev.
-
----
-
 ## Screenshots
 
 From the live app ([lilablackaryan.netlify.app](https://lilablackaryan.netlify.app/)):
@@ -34,6 +17,21 @@ From the live app ([lilablackaryan.netlify.app](https://lilablackaryan.netlify.a
 ### Grand Rift — player traffic heatmap
 
 ![Grand Rift: player traffic density over map labels and combat clusters](./docs/screenshots/03-grand-rift-player-traffic.png)
+
+---
+
+## Live deployment
+
+**Production:** [https://lilablackaryan.netlify.app/](https://lilablackaryan.netlify.app/)
+
+**Deploy options (static SPA, no server):**
+
+| Host | Notes |
+|------|--------|
+| **Netlify** | Repo includes `netlify.toml`: `pnpm run build`, publish `dist`, and **COOP/COEP** headers for WASM. Connect repo → deploy. |
+| **Vercel** | Repo includes `vercel.json` headers (same COOP/COEP). Framework preset: **Vite**. Output: **`dist`**. Install: `pnpm install` (or enable pnpm on Vercel). |
+
+WASM + SharedArrayBuffer paths used by `parquet-wasm` **require** those security headers in production, not only in dev.
 
 ---
 
