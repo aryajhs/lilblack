@@ -6,11 +6,7 @@ Browser-based **match telemetry explorer** for battle-royale / extraction-style 
 
 ## Live deployment
 
-**Replace this line with your public URL after you deploy** (evaluators need a working link):
-
-| Environment | URL |
-|-------------|-----|
-| **Production** | `https://YOUR-SITE.netlify.app` or `https://YOUR-PROJECT.vercel.app` |
+**Production:** [https://lilablackaryan.netlify.app/](https://lilablackaryan.netlify.app/)
 
 **Deploy options (static SPA, no server):**
 
@@ -20,6 +16,24 @@ Browser-based **match telemetry explorer** for battle-royale / extraction-style 
 | **Vercel** | Repo includes `vercel.json` headers (same COOP/COEP). Framework preset: **Vite**. Output: **`dist`**. Install: `pnpm install` (or enable pnpm on Vercel). |
 
 WASM + SharedArrayBuffer paths used by `parquet-wasm` **require** those security headers in production, not only in dev.
+
+---
+
+## Screenshots
+
+From the live app ([lilablackaryan.netlify.app](https://lilablackaryan.netlify.app/)):
+
+### Ambrose Valley — death zones + bot marching paths
+
+![Ambrose Valley dashboard: death zone heatmap, bot paths, filters, and timeline](./docs/screenshots/01-ambrose-valley-death-zones.png)
+
+### Lockdown — death zones + trails and events
+
+![Lockdown map: death zone overlay, cyan/magenta paths, event markers](./docs/screenshots/02-lockdown-death-zones.png)
+
+### Grand Rift — player traffic heatmap
+
+![Grand Rift: player traffic density over map labels and combat clusters](./docs/screenshots/03-grand-rift-player-traffic.png)
 
 ---
 
