@@ -2,6 +2,12 @@
 
 A browser-based game analytics dashboard for analyzing player behavior on battle-royale extraction shooter maps using telemetry data.
 
+## Author & submission
+
+**Aryan Gupta** — take-home assignment for the **Product Engineer** role.
+
+---
+
 ## Live Deployment
 
 🚀 **Deploy to Netlify** — This project is configured for one-click deployment to Netlify as a static site.
