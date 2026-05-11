@@ -4,6 +4,7 @@ import 'leaflet.heat';
 import { useStore } from '../../store/useStore';
 import { GameEvent } from '../../types';
 import { buildHeatmapData } from '../../lib/heatmapBuilder';
+import { buildMapMarkerTooltipHtml } from '../../lib/mapMarkerTooltip';
 
 // The Leaflet custom CRS uses transformation (1, 0, -1, 1024):
 //   screen_x = lng
@@ -134,11 +135,17 @@ export function MapCanvas() {
       if (event.event === 'Loot') {
         const icon = L.divIcon({
           className: `loot-marker${isBot ? ' loot-marker--bot' : ''}`,
-          html: '<div class="loot-marker-shape" aria-hidden="true"></div>',
+          html: `<div class="loot-marker-shape" title="${isBot ? 'Bot — loot pickup' : 'Human — loot pickup'}" aria-hidden="true"></div>`,
           iconSize: [16, 16],
           iconAnchor: [8, 8],
         });
-        L.marker([lat, lng], { icon, opacity }).addTo(markersLayerRef.current!);
+        const lootMarker = L.marker([lat, lng], { icon, opacity }).addTo(markersLayerRef.current!);
+        lootMarker.bindTooltip(buildMapMarkerTooltipHtml(event, 'loot'), {
+          direction: 'top',
+          className: 'map-event-tooltip-pane',
+          sticky: true,
+          permanent: false,
+        });
       } else {
         let fillColor: string;
         let markerClass: string;
@@ -154,15 +161,25 @@ export function MapCanvas() {
         }
         if (isBot) markerClass += ' event-marker--bot';
 
-        L.circleMarker([lat, lng], {
+        const ringColor = isBot ? '#e879f9' : '#7ee8ff';
+
+        const cm = L.circleMarker([lat, lng], {
           className: markerClass,
           radius: isBot ? 7 : 9,
           fillColor,
-          color: '#0a0a0a',
-          weight: 2,
+          color: ringColor,
+          weight: isBot ? 2.5 : 3,
           opacity,
           fillOpacity,
         }).addTo(markersLayerRef.current!);
+
+        cm.bindTooltip(buildMapMarkerTooltipHtml(event, 'combat'), {
+          direction: 'top',
+          opacity: 1,
+          className: 'map-event-tooltip-pane',
+          sticky: true,
+          permanent: false,
+        });
       }
     });
 
@@ -200,6 +217,24 @@ export function MapCanvas() {
           dashArray: '10 14',
           className: isBot ? 'map-trail map-trail--bot' : 'map-trail map-trail--human',
         }).addTo(trailsLayerRef.current!);
+
+        const last = sorted[sorted.length - 1];
+        const [tLat, tLng] = toLatLng(last.pixelX, last.pixelY);
+        const hoverTarget = L.circleMarker([tLat, tLng], {
+          className: 'map-trail-hover-target',
+          radius: 16,
+          fillColor: '#000',
+          fillOpacity: 0.001,
+          stroke: false,
+          interactive: true,
+        }).addTo(markersLayerRef.current!);
+        hoverTarget.bindTooltip(buildMapMarkerTooltipHtml(last, 'path_end'), {
+          direction: 'top',
+          opacity: 1,
+          className: 'map-event-tooltip-pane',
+          sticky: true,
+          permanent: false,
+        });
       });
     }
   }, [selectedMatchId, currentTimestamp, activeEvents, showHumans, showBots, rawEvents]);
@@ -410,12 +445,69 @@ export function MapCanvas() {
             borderColor: 'var(--border)',
             fontFamily: 'var(--font-mono)',
             fontSize: '10px',
+            color: 'var(--text-primary)',
           }}
         >
+          <div
+            className="mb-1.5"
+            style={{ fontSize: '8px', letterSpacing: '0.14em', color: 'var(--text-primary)' }}
+          >
+            EVENT TYPE
+          </div>
           <LegendRow kind="kill"  label="KILL"  />
           <LegendRow kind="death" label="DEATH" />
           <LegendRow kind="loot"  label="LOOT"  />
           <LegendRow kind="storm" label="STORM" />
+          <div
+            className="mt-2 pt-2 border-t space-y-1.5"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <div style={{ fontSize: '8px', letterSpacing: '0.14em', color: 'var(--text-primary)' }}>
+              HUMAN VS BOT
+            </div>
+            <LegendPlayerKind
+              swatchClass="map-legend-swatch--player-human"
+              title="Human"
+              hint="Cyan ring · larger dot on kills / deaths / storm"
+            />
+            <LegendPlayerKind
+              swatchClass="map-legend-swatch--player-bot"
+              title="Bot"
+              hint="Magenta ring · smaller dot"
+            />
+            <div className="flex items-start gap-2">
+              <div className="flex gap-1 flex-shrink-0 pt-0.5" aria-hidden>
+                <div className="map-legend-swatch map-legend-swatch--loot map-legend-swatch--loot-legend-human" />
+                <div className="map-legend-swatch map-legend-swatch--loot map-legend-swatch--loot-legend-bot" />
+              </div>
+              <div style={{ color: 'var(--text-primary)', lineHeight: 1.35 }}>
+                <span style={{ letterSpacing: '0.06em' }}>LOOT OUTLINE</span>
+                <span
+                  className="block mt-0.5"
+                  style={{
+                    fontSize: '8px',
+                    color: 'var(--accent)',
+                    letterSpacing: '0.04em',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  Cyan edge = human pickup · magenta edge = bot
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            className="mt-2 pt-2 border-t"
+            style={{
+              borderColor: 'var(--border)',
+              fontSize: '8px',
+              color: 'var(--text-primary)',
+              letterSpacing: '0.06em',
+              lineHeight: 1.45,
+            }}
+          >
+            Hover any marker or path end for player ID and HUMAN / BOT label.
+          </div>
         </div>
       )}
     </div>
@@ -430,7 +522,37 @@ function LegendRow({ kind, label }: { kind: 'kill' | 'death' | 'loot' | 'storm';
       ) : (
         <div className={`map-legend-swatch map-legend-swatch--${kind} flex-shrink-0`} aria-hidden />
       )}
-      <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
+      <span style={{ color: 'var(--text-primary)' }}>{label}</span>
+    </div>
+  );
+}
+
+function LegendPlayerKind({
+  swatchClass,
+  title,
+  hint,
+}: {
+  swatchClass: string;
+  title: string;
+  hint: string;
+}) {
+  return (
+    <div className="flex items-start gap-2">
+      <div className={`map-legend-swatch ${swatchClass} flex-shrink-0 mt-0.5`} aria-hidden />
+      <div style={{ color: 'var(--text-primary)', lineHeight: 1.35 }}>
+        <span style={{ letterSpacing: '0.06em' }}>{title}</span>
+        <span
+          className="block mt-0.5"
+          style={{
+            fontSize: '8px',
+            color: 'var(--accent)',
+            letterSpacing: '0.04em',
+            lineHeight: 1.4,
+          }}
+        >
+          {hint}
+        </span>
+      </div>
     </div>
   );
 }

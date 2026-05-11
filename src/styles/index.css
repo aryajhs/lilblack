@@ -134,8 +134,14 @@ input[type='range']:disabled {
   animation: map-loot-pulse 2.1s ease-in-out infinite;
 }
 
+/* Bot loot: magenta outline + pulse that keeps magenta in the glow */
 .loot-marker--bot .loot-marker-shape {
-  animation-duration: 2.7s;
+  animation: map-loot-pulse-bot 2.7s ease-in-out infinite;
+  border-color: var(--event-position-bot);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--event-position-bot) 45%, transparent),
+    0 0 12px color-mix(in srgb, var(--event-position-bot) 50%, transparent),
+    0 0 8px color-mix(in srgb, var(--event-loot) 40%, transparent);
 }
 
 @keyframes map-loot-pulse {
@@ -154,6 +160,138 @@ input[type='range']:disabled {
       0 0 0 1px var(--event-loot),
       0 0 16px color-mix(in srgb, var(--event-loot) 85%, transparent);
   }
+}
+
+@keyframes map-loot-pulse-bot {
+  0%,
+  100% {
+    transform: rotate(45deg) scale(1);
+    filter: brightness(1);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--event-position-bot) 45%, transparent),
+      0 0 10px color-mix(in srgb, var(--event-position-bot) 42%, transparent),
+      0 0 6px color-mix(in srgb, var(--event-loot) 30%, transparent);
+  }
+  50% {
+    transform: rotate(45deg) scale(1.18);
+    filter: brightness(1.18);
+    box-shadow:
+      0 0 0 1px var(--event-position-bot),
+      0 0 14px color-mix(in srgb, var(--event-position-bot) 72%, transparent),
+      0 0 8px color-mix(in srgb, var(--event-loot) 45%, transparent);
+  }
+}
+
+/* ── Invisible hit target at path end (tooltip on hover only) ───────────── */
+.leaflet-overlay-pane svg circle.map-trail-hover-target {
+  cursor: help;
+  pointer-events: auto;
+}
+
+/* ── Hover tooltips: HUMAN / BOT + id on combat markers ─────────────────── */
+/* Leaflet defaults `white-space: nowrap` on .leaflet-tooltip — override so copy wraps inside max-width */
+.leaflet-tooltip.map-event-tooltip-pane {
+  background: rgba(12, 12, 12, 0.96) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary);
+  border-radius: 0 !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+  font-family: var(--font-mono) !important;
+  padding: 8px 12px !important;
+  /* Leaflet can shrink the box to a hairline; min-width keeps labels horizontal */
+  min-width: 200px;
+  max-width: min(300px, calc(100vw - 16px));
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.map-event-player-tooltip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  text-align: left;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.map-event-player-tooltip__kind {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.map-event-player-tooltip__kind--human {
+  color: var(--event-position);
+}
+
+.map-event-player-tooltip__kind--bot {
+  color: var(--event-position-bot);
+}
+
+.map-event-player-tooltip__id {
+  font-size: 9px;
+  color: var(--text-primary);
+  letter-spacing: 0.05em;
+}
+
+.map-event-player-tooltip__headline {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin-top: 2px;
+  max-width: 100%;
+}
+
+.map-event-player-tooltip__kv {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 3px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  color: var(--accent);
+}
+
+.map-event-player-tooltip__k {
+  color: var(--accent);
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+.map-event-player-tooltip__v {
+  color: var(--accent);
+  opacity: 1;
+  word-break: break-word;
+}
+
+.map-event-player-tooltip__muted {
+  color: var(--accent);
+  opacity: 0.55;
+  font-style: italic;
+}
+
+.map-event-player-tooltip__meta {
+  font-size: 8px;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  opacity: 0.9;
+  margin-top: 1px;
 }
 
 /* ── Kill / death / storm circle markers ─────────────────────────────────── */
@@ -252,6 +390,41 @@ input[type='range']:disabled {
   transform: rotate(45deg);
   box-shadow: 0 0 8px color-mix(in srgb, var(--event-loot) 55%, transparent);
   animation: map-legend-loot 2.1s ease-in-out infinite;
+}
+
+/* Legend: same encoding as map (ring = human vs bot on combat nodes) */
+.map-legend-swatch--player-human {
+  border-radius: 9999px;
+  width: 12px;
+  height: 12px;
+  margin: 1px;
+  background: var(--bg-base);
+  border: 2px solid #7ee8ff;
+  box-shadow: 0 0 6px color-mix(in srgb, #7ee8ff 45%, transparent);
+}
+
+.map-legend-swatch--player-bot {
+  border-radius: 9999px;
+  width: 10px;
+  height: 10px;
+  margin: 2px;
+  background: var(--bg-base);
+  border: 2px solid #e879f9;
+  box-shadow: 0 0 6px color-mix(in srgb, #e879f9 45%, transparent);
+}
+
+.map-legend-swatch--loot-legend-human {
+  animation: none;
+  transform: rotate(45deg) scale(0.92);
+}
+
+.map-legend-swatch--loot-legend-bot {
+  animation: none;
+  transform: rotate(45deg) scale(0.92);
+  border-color: var(--event-position-bot);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--event-position-bot) 35%, transparent),
+    0 0 8px color-mix(in srgb, var(--event-position-bot) 40%, transparent);
 }
 
 @keyframes map-legend-pop-kill {

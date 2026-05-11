@@ -181,6 +181,16 @@ export function LeftPanel() {
             </button>
           ))}
         </div>
+        <p
+          className="mt-2 text-[9px] leading-snug"
+          style={{
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-primary)',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Map markers: cyan ring = human, magenta = bot. Corner legend explains loot outlines too.
+        </p>
       </Section>
 
       {/* ── EVENT FILTER ────────────────────────────────────────────────── */}
