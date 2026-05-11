@@ -1,0 +1,68 @@
+:root {
+  --font-size: 16px;
+
+  /* Brutalist Design System Colors */
+  --bg-base: #0A0A0A;
+  --bg-surface: #111111;
+  --bg-elevated: #1A1A1A;
+  --border: #2A2A2A;
+  --border-active: #444444;
+  --text-primary: #E8E8E8;
+  --text-secondary: #666666;
+  --text-muted: #3A3A3A;
+  --accent: #C8FF00;
+  --accent-text: #000000;
+
+  /* Event Colors (high-contrast for map + motion) */
+  --event-kill: #ff9f1a;
+  --event-death: #ff4d5e;
+  --event-loot: #5cc8ff;
+  --event-storm: #c27aff;
+  --event-position: #00e5ff;
+  --event-position-bot: #e879f9;
+
+  /* Typography */
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    overflow: hidden;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  button {
+    font-family: var(--font-mono);
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  input, select {
+    font-family: var(--font-mono);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--border-active);
+  }
+}
