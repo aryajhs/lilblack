@@ -366,9 +366,9 @@ export function MapCanvas() {
             NO DATA LOADED
           </div>
           <div className="text-[11px] tracking-[0.05em] mb-6">
-            DROP A .ZIP FILE ANYWHERE
+            BUNDLED player_data.zip NOT FOUND
             <br />
-            OR CLICK &quot;LOAD DATA&quot; ABOVE
+            DROP A .ZIP FILE ANYWHERE OR USE &quot;LOAD DATA&quot;
           </div>
           <div
             className="border-t w-72 pt-4 mt-2 text-[10px] space-y-1"

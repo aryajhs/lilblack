@@ -107,7 +107,7 @@ Parquet columns used: `user_id`, `match_id`, `map_id`, `x`, `y`, `z`, `ts`, `eve
 
 ## How to use the tool
 
-1. **Load** the ZIP (drag anywhere or use **LOAD DATA**).
+1. **Load** — On startup the app auto-loads **`src/player_data.zip`** when that file is present in the build. You can also drag-drop a ZIP anywhere or use **LOAD DATA / RELOAD DATA** in the header.
 2. **Map tab** — Ambrose Valley / Grand Rift / Lockdown (syncs with match data when present).
 3. **Match** — Dropdown filters by loaded dates; pick a `matchId`.
 4. **Players** — Toggle **HUMANS** / **BOTS** (ring color encodes type on markers).

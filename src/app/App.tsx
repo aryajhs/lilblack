@@ -1,14 +1,35 @@
 import '../styles/index.css';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Header } from '../components/layout/Header';
 import { LeftPanel } from '../components/layout/LeftPanel';
 import { BottomTimeline } from '../components/layout/BottomTimeline';
 import { MapCanvas } from '../components/map/MapCanvas';
 import { useStore } from '../store/useStore';
+import bundledPlayerDataUrl from '../player_data.zip?url';
 
 export default function App() {
-  const { loadZip, isLoading } = useStore();
+  const { loadZip, isLoading, hasData } = useStore();
   const [isDragging, setIsDragging] = useState(false);
+  const bundledLoadStarted = useRef(false);
+
+  useEffect(() => {
+    if (bundledLoadStarted.current || hasData || isLoading) return;
+    bundledLoadStarted.current = true;
+
+    (async () => {
+      try {
+        const res = await fetch(bundledPlayerDataUrl);
+        if (!res.ok) {
+          console.warn('Bundled player_data.zip not found:', res.status);
+          return;
+        }
+        const blob = await res.blob();
+        await loadZip(new File([blob], 'player_data.zip', { type: 'application/zip' }));
+      } catch (err) {
+        console.warn('Auto-load player_data.zip failed:', err);
+      }
+    })();
+  }, [loadZip, hasData, isLoading]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
